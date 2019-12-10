@@ -11,7 +11,7 @@
                     </transition-group>
                 </div>
                 <transition name="slide-fade" mode="out-in">
-                    <div class="col-sm task-detail-pane" v-if="paneOpen">
+                    <div class="col-sm-5 task-detail-pane" v-if="paneOpen">
                         <span class="pull-right" @click="closePane">X</span>
                         <TaskDetail :task="activeTask"/>
                     </div>
@@ -138,10 +138,19 @@
         text-align: left;
         padding: 0 7px;
         height: 36px;
+        border-top: 1px solid #ececec;
         border-bottom: 1px solid #ececec;
         margin-bottom: -1px;
         list-style: none;
         cursor: pointer;
+    }
+
+    .task-list .task:first-child {
+        border-top: none;
+    }
+
+    .task-list .task:last-child {
+        border-bottom: none;
     }
 
     .task-list .task.active {
@@ -178,12 +187,10 @@
     .slide-fade-list-leave-active {
         transition: all 0.5s ease;
         background-color: darkred!important;
-        border-bottom: 1px solid #ececec;
     }
 
     .slide-fade-list-leave-to {
         transform: translateX(-100%);
-        border-bottom: 1px solid #ececec;
         opacity: 0;
     }
 
