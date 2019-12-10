@@ -11,9 +11,9 @@
                     </transition-group>
                 </div>
                 <transition name="slide-fade" mode="out-in">
-                    <div class="col-sm-5 task-detail-pane" v-if="paneOpen">
-                        <span class="pull-right" @click="closePane">X</span>
-                        <TaskDetail :task="activeTask"/>
+                    <div class="col-sm-5 task-detail-pane" v-show="paneOpen">
+                        <span class="pull-right close-pane" @click="closePane">X</span>
+                        <TaskDetail />
                     </div>
                 </transition>
             </div>
@@ -25,6 +25,7 @@
 <script>
 
     import axios from 'axios'
+    import { EventBus } from "./main"; // check the path
     import TaskDetail from "./components/TaskDetail.vue";
 
     export default {
@@ -32,7 +33,7 @@
         components: {TaskDetail},
         data() {
             return {
-                activeTask: null,
+                activeTaskId: null,
                 paneOpen: false,
                 tasks: null,
                 errors: []
@@ -44,21 +45,23 @@
             },
             closePane: function(){
                 this.paneOpen = false;
+                this.activeTaskId = null
             },
             activateTask: function(id) {
-                this.activeTask = this.getTask(id);
                 this.openPane();
+                this.activeTaskId = id;
+                EventBus.$emit('TASK_DETAIL', id);
             },
             removeTask: function(id){
                 let index = this.tasks.findIndex(task => task.id === id);
                 this.tasks.splice(index, 1);
-                if(this.activeTask.id === id){
+                if(this.activeTaskId === id){
                     this.closePane();
                 }
             },
             isTaskActive: function(id){
-                if(this.activeTask !== null && this.activeTask !== undefined){
-                    return this.activeTask.id === id
+                if(this.activeTaskId !== null && this.activeTaskId !== undefined){
+                    return this.activeTaskId === id
                 }
                 return false
             },
@@ -66,15 +69,6 @@
                 axios.get("https://jsonplaceholder.typicode.com/todos/")
                     .then(response => {
                         this.tasks = response.data
-                    })
-                    .catch(e => {
-                        this.errors.push(e)
-                    })
-            },
-            getTask: function (id) {
-                axios.get("https://jsonplaceholder.typicode.com/todos/" + id)
-                    .then(response => {
-                        this.activeTask = response.data
                     })
                     .catch(e => {
                         this.errors.push(e)
@@ -157,6 +151,13 @@
         background-color: #edf8ff;
     }
 
+    .task-detail-pane .close-pane {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+    }
+
     .slide-fade-enter {
         transform: translateX(500px);
         opacity: 0;
@@ -181,7 +182,7 @@
     }
 
     .slide-fade-list-enter-active {
-        transition: all 0.2s ease;
+        transition: all 0.5s ease;
     }
 
     .slide-fade-list-leave-active {
