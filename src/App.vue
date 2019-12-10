@@ -6,11 +6,11 @@
                     <transition-group tag="ul" name="slide-fade-list" appear class="task-list">
                         <li class="task" :class="{ active : isTaskActive(task.id) }" v-for="task in tasks" :key="task.id">
                             <div class="remove-task"><span @click="removeTask(task.id)">[X]</span></div>
-                            <div class="task-title" @click="activateTask(task)">{{ task.title }}</div>
+                            <div class="task-title" @click="activateTask(task.id)">{{ task.title }}</div>
                         </li>
                     </transition-group>
                 </div>
-                <transition name="slide-fade">
+                <transition name="slide-fade" mode="out-in">
                     <div class="col-sm task-detail-pane" v-if="paneOpen">
                         <span class="pull-right" @click="closePane">X</span>
                         <TaskDetail :task="activeTask"/>
@@ -45,8 +45,8 @@
             closePane: function(){
                 this.paneOpen = false;
             },
-            activateTask: function(task) {
-                this.activeTask = task;
+            activateTask: function(id) {
+                this.activeTask = this.getTask(id);
                 this.openPane();
             },
             removeTask: function(id){
@@ -57,7 +57,7 @@
                 }
             },
             isTaskActive: function(id){
-                if(this.activeTask !== null){
+                if(this.activeTask !== null && this.activeTask !== undefined){
                     return this.activeTask.id === id
                 }
                 return false
@@ -71,6 +71,15 @@
                         this.errors.push(e)
                     })
             },
+            getTask: function (id) {
+                axios.get("https://jsonplaceholder.typicode.com/todos/" + id)
+                    .then(response => {
+                        this.activeTask = response.data
+                    })
+                    .catch(e => {
+                        this.errors.push(e)
+                    })
+            }
         },
         mounted() {
             this.getTaskList()
