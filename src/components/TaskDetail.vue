@@ -1,7 +1,23 @@
 <template>
     <div class="task-detail" v-if="activeTask">
         <div class="loading-wrapper" v-if="loading">
-            <img src="https://miro.medium.com/max/882/1*9EBHIOzhE1XfMYoKz1JcsQ.gif" />
+            <content-loader
+                    :height="500"
+                    :width="440"
+                    :speed="2"
+                    primaryColor="#f3f3f3"
+                    secondaryColor="#e8e8e8"
+            >
+                <circle cx="10" cy="20" r="8" />
+                <rect x="25" y="15" rx="5" ry="5" width="220" height="10" />
+                <circle cx="10" cy="50" r="8" />
+                <rect x="25" y="45" rx="5" ry="5" width="220" height="10" />
+                <circle cx="10" cy="80" r="8" />
+                <rect x="25" y="75" rx="5" ry="5" width="220" height="10" />
+                <circle cx="10" cy="110" r="8" />
+                <rect x="25" y="105" rx="5" ry="5" width="220" height="10" />
+                <rect x="321.84" y="40.61" rx="0" ry="0" width="61" height="49" />
+            </content-loader>
         </div>
         <transition name="slide-fade-detail" mode="in-out">
             <div v-if="!loading">
@@ -15,9 +31,11 @@
 
     import axios from 'axios'
     import { EventBus } from "../main"; // check the path
+    import { ContentLoader } from 'vue-content-loader'
 
     export default {
         name: 'TaskDetail',
+        components: { ContentLoader },
         data() {
             return {
                 activeTask: null,
